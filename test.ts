@@ -1,5 +1,11 @@
-function f([first, second]: [number, number]) {
-    console.log(first);
-    console.log(second);
+class C {
+    p = 12;
+    m() {
+        console.log("This is inside m");
+    }
 }
-f([1, 2]);
+let c = new C();
+let clone = { ...c };
+
+console.log(clone.p);
+c.m();
