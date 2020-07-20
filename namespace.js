@@ -1,31 +1,3 @@
-/// <reference path="Validation.ts" />
-var Validation;
-(function (Validation) {
-    var lettersRegexp = /^[A-Za-z]+$/;
-    var LettersOnlyValidator = /** @class */ (function () {
-        function LettersOnlyValidator() {
-        }
-        LettersOnlyValidator.prototype.isAcceptable = function (s) {
-            return lettersRegexp.test(s);
-        };
-        return LettersOnlyValidator;
-    }());
-    Validation.LettersOnlyValidator = LettersOnlyValidator;
-})(Validation || (Validation = {}));
-/// <reference path="Validation.ts" />
-var Validation;
-(function (Validation) {
-    var numberRegexp = /^[0-9]+$/;
-    var ZipCodeValidator = /** @class */ (function () {
-        function ZipCodeValidator() {
-        }
-        ZipCodeValidator.prototype.isAcceptable = function (s) {
-            return s.length === 5 && numberRegexp.test(s);
-        };
-        return ZipCodeValidator;
-    }());
-    Validation.ZipCodeValidator = ZipCodeValidator;
-})(Validation || (Validation = {}));
 //////////////////////////////////////////////////////////////////
 //단일 파일 검사기 (Validators in a single file)
 // interface StringValidator {
@@ -93,23 +65,46 @@ var Validation;
 //파일 간 분할 (Splitting Across Files)
 //다중 파일 네임스페이스 (Multi-file namespaces)
 //여기서 Validation 네임스페이스를 여러 파일로 분할합니다. 파일이 분리되어 있어도 같은 네임스페이스에 기여할 수 있고 마치 한 곳에서 정의된 것처럼 사용할 수 있습니다. 파일 간 의존성이 존재하므로, 참조 태그를 추가하여 컴파일러에게 파일 간의 관계를 알립니다. 그 외에 테스트 코드는 변경되지 않았습니다.
-/// <reference path="Validation.ts" />
-/// <reference path="LettersOnlyValidators.ts" />
-/// <reference path="ZipCodeValidators.ts" />
-// Some samples to try
-var strings = ["Hello", "98052", "101"];
-// Validators to use
-var validators = {};
-validators["ZIP code"] = new Validation.ZipCodeValidator();
-validators["Letters only"] = new Validation.LettersOnlyValidator();
-// Show whether each string passed each validator
-for (var _i = 0, strings_1 = strings; _i < strings_1.length; _i++) {
-    var s = strings_1[_i];
-    for (var name_1 in validators) {
-        console.log("\"" + s + "\" - " + (validators[name_1].isAcceptable(s) ? "matches" : "does not match") + " " + name_1);
-    }
-}
+// /// <reference path="Validation.ts" />
+// /// <reference path="LettersOnlyValidators.ts" />
+// /// <reference path="ZipCodeValidators.ts" />
+// // Some samples to try
+// let strings = ["Hello", "98052", "101"];
+// // Validators to use
+// let validators: { [s: string]: Validation.StringValidator; } = {};
+// validators["ZIP code"] = new Validation.ZipCodeValidator();
+// validators["Letters only"] = new Validation.LettersOnlyValidator();
+// // Show whether each string passed each validator
+// for (let s of strings) {
+//     for (let name in validators) {
+//         console.log(`"${s}" - ${validators[name].isAcceptable(s) ? "matches" : "does not match"} ${name}`);
+//     }
+// }
 //파일이 여러 개 있으면 컴파일된 코드가 모두 로드되는지 확인해야 합니다. 이를 수행하는 두 가지 방법이 있습니다.
 //먼저, 모든 입력 파일을 하나의 JavaScript 출력 파일로 컴파일하기 위해 --outFile 플래그를 사용하여 연결 출력(concatenated output)을 사용할 수 있습니다:
 //tsc --outFile namespace.js namespace.ts
 //tsc --outFile sample.js Validation.ts LettersOnlyValidator.ts ZipCodeValidator.ts Test.ts
+//tsc --outFile namespace.js Validation.ts LettersOnlyValidators.ts ZipCodeValidators.ts namespace.ts
+//또는 파일별 컴파일 (기본값)을 사용하여 각 입력 파일을 하나의 JavaScript 파일로 생성할 수 있습니다. 여러 JS 파일이 생성되는 경우, 웹 페이지에서 생성된 개별 파일을 적절한 순서로 로드하기 위해 <script> 태그를 사용해야 합니다. 예를 들어:
+//////////////////////////////////////////////////////////////////
+//aliases
+var Shapes;
+(function (Shapes) {
+    var Polygons;
+    (function (Polygons) {
+        var Triangle = /** @class */ (function () {
+            function Triangle() {
+            }
+            return Triangle;
+        }());
+        Polygons.Triangle = Triangle;
+        var Square = /** @class */ (function () {
+            function Square() {
+            }
+            return Square;
+        }());
+        Polygons.Square = Square;
+    })(Polygons = Shapes.Polygons || (Shapes.Polygons = {}));
+})(Shapes || (Shapes = {}));
+var polygons = Shapes.Polygons;
+var sq = new polygons.Square(); // 'new Shapes.Polygons.Square()'와 동일
